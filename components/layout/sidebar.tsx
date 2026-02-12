@@ -3,18 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Flame, Calendar, BarChart3, Users, Settings, RefreshCw, LogOut
+  LayoutGrid, Crosshair, CalendarDays, TrendingUp, Users, Filter, SlidersHorizontal, RefreshCw, LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Opportunities", href: "/opportunities", icon: Flame },
-  { name: "Calendar", href: "/calendar", icon: Calendar },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Dashboard", href: "/", icon: LayoutGrid },
+  { name: "Opportunities", href: "/opportunities", icon: Crosshair },
+  { name: "Calendar", href: "/calendar", icon: CalendarDays },
+  { name: "Analytics", href: "/analytics", icon: TrendingUp },
   { name: "Team", href: "/team", icon: Users },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Filtering", href: "/filtering", icon: Filter },
+  { name: "Settings", href: "/settings", icon: SlidersHorizontal },
 ];
 
 interface SidebarProps {
@@ -30,8 +31,8 @@ export function Sidebar({ user, lastSyncAt, onLogout }: SidebarProps) {
     <div className="flex flex-col w-64 bg-white border-r border-zinc-200 h-screen fixed left-0 top-0">
       {/* Logo */}
       <div className="p-6 border-b border-zinc-200">
-        <h1 className="text-xl font-bold text-zinc-900 tracking-tight">SOCIO</h1>
-        <p className="text-xs text-zinc-500 mt-1">Lead Pipeline</p>
+        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight font-heading">SOCIO</h1>
+        <p className="text-xs text-zinc-600 mt-1">Lead Intelligence</p>
       </div>
 
       {/* Navigation */}
@@ -50,7 +51,7 @@ export function Sidebar({ user, lastSyncAt, onLogout }: SidebarProps) {
                   : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
               )}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className="w-5 h-5" strokeWidth={1.5} />
               {item.name}
             </Link>
           );

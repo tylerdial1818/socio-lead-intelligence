@@ -42,7 +42,7 @@ export function MetricsRow({ stats }: MetricsRowProps) {
           className="bg-white border border-zinc-200 rounded-xl p-6 hover:border-zinc-300 hover:shadow-sm transition-all"
         >
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-zinc-500 font-medium">{metric.label}</span>
+            <span className="text-sm text-zinc-600 font-medium">{metric.label}</span>
             <metric.icon className={`w-5 h-5 ${metric.iconColor}`} />
           </div>
           <p className="text-3xl font-bold text-zinc-900 font-mono">{metric.value}</p>

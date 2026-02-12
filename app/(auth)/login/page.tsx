@@ -21,8 +21,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">SOCIO</h1>
-          <p className="text-sm text-zinc-500 mt-1">Lead Pipeline</p>
+          <h1 className="text-3xl font-bold text-zinc-900 tracking-tight font-heading">SOCIO</h1>
+          <p className="text-sm text-zinc-600 mt-1">Lead Intelligence</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -37,7 +37,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="tyler@socio.com"
+              placeholder="tyler@socio-analytics.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -62,8 +62,8 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-xs text-zinc-400 text-center mt-6">
-          Demo: tyler@socio.com / password123
+        <p className="text-xs text-zinc-500 text-center mt-6">
+          Demo: tyler@socio-analytics.com / password123
         </p>
       </div>
     </div>

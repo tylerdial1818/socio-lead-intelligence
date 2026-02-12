@@ -8,7 +8,10 @@ export async function GET(
   try {
     const opportunity = await prisma.opportunity.findUnique({
       where: { id: params.id },
-      include: { assignedTo: true },
+      include: {
+        assignedTo: true,
+        matchedKeywords: { include: { keyword: true } },
+      },
     });
     if (!opportunity) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -36,7 +39,10 @@ export async function PATCH(
     const opportunity = await prisma.opportunity.update({
       where: { id: params.id },
       data,
-      include: { assignedTo: true },
+      include: {
+        assignedTo: true,
+        matchedKeywords: { include: { keyword: true } },
+      },
     });
 
     return NextResponse.json(opportunity);

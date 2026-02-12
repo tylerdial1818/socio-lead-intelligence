@@ -88,6 +88,7 @@ model Opportunity {
   aiGeneratedAt DateTime?
 
   keywordsMatched String[]
+  matchedKeywords OpportunityKeyword[]
 
   status       Status      @default(NEW)
   decision     String?
@@ -104,6 +105,61 @@ model Opportunity {
   @@index([status])
   @@index([deadline])
   @@index([isUtah])
+}
+
+enum KeywordType {
+  INCLUDE
+  EXCLUDE
+}
+
+enum KeywordTier {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Keyword {
+  id          String   @id @default(cuid())
+  term        String   @unique
+  type        KeywordType
+  tier        KeywordTier @default(MEDIUM)
+  category    String?
+  isActive    Boolean  @default(true)
+  matchCount  Int      @default(0)
+  lastMatchAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+
+  opportunityKeywords OpportunityKeyword[]
+
+  @@index([type])
+  @@index([isActive])
+  @@index([category])
+}
+
+model OpportunityKeyword {
+  id            String      @id @default(cuid())
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId String
+  keyword       Keyword     @relation(fields: [keywordId], references: [id])
+  keywordId     String
+  matchLocation String?
+  matchedText   String?
+  createdAt     DateTime    @default(now())
+
+  @@unique([opportunityId, keywordId])
+  @@index([keywordId])
+}
+
+model ScoringConfig {
+  id              String   @id @default("default")
+  budgetWeight    Float    @default(25)
+  sectorWeight    Float    @default(25)
+  geographyWeight Float    @default(25)
+  timingWeight    Float    @default(25)
+  utahMultiplier  Float    @default(1.5)
+  updatedAt       DateTime @updatedAt
 }
 
 model ScraperRun {

@@ -41,7 +41,10 @@ export async function GET(request: NextRequest) {
         orderBy: orderByMap[sortBy] || { icpScore: "desc" },
         take: limit,
         skip: offset,
-        include: { assignedTo: true },
+        include: {
+          assignedTo: true,
+          matchedKeywords: { include: { keyword: true } },
+        },
       }),
       prisma.opportunity.count({ where }),
     ]);

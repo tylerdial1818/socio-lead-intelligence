@@ -10,6 +10,7 @@ import { UtahBadge } from "./utah-badge";
 import { AIBrief } from "./ai-brief";
 import { ScoreBreakdown } from "./score-breakdown";
 import { ActionButtons } from "./action-buttons";
+import { KeywordBadge } from "@/components/keywords/keyword-badge";
 import { formatCurrency, formatSource } from "@/lib/utils";
 import type { Opportunity, TeamMember } from "@/types";
 import { useState } from "react";
@@ -43,12 +44,12 @@ export function OpportunityModal({
         <div className="p-6">
           {/* Header */}
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-zinc-900 flex items-center gap-2 mb-1">
+            <h2 className="text-xl font-bold text-zinc-900 font-heading flex items-center gap-2 mb-1">
               {opportunity.isUtah && <UtahBadge />}
               {opportunity.title}
             </h2>
-            <p className="text-zinc-500">{opportunity.issuingOrg}</p>
-            <div className="flex items-center gap-3 mt-2 text-sm text-zinc-400">
+            <p className="text-zinc-600">{opportunity.issuingOrg}</p>
+            <div className="flex items-center gap-3 mt-2 text-sm text-zinc-500">
               <span>Source: {formatSource(opportunity.source)}</span>
               {opportunity.postedDate && (
                 <>
@@ -115,6 +116,25 @@ export function OpportunityModal({
                   >
                     {showFullDescription ? "Show less" : "Show more"}
                   </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Matched Keywords */}
+          {opportunity.matchedKeywords && opportunity.matchedKeywords.length > 0 && (
+            <div className="mb-6">
+              <h4 className="font-semibold mb-2">Matched Keywords</h4>
+              <div className="flex flex-wrap gap-2">
+                {opportunity.matchedKeywords.map((mk) =>
+                  mk.keyword ? (
+                    <KeywordBadge
+                      key={mk.id}
+                      term={mk.keyword.term}
+                      type={mk.keyword.type}
+                      matchLocation={mk.matchLocation}
+                    />
+                  ) : null
                 )}
               </div>
             </div>

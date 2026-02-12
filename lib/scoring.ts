@@ -139,7 +139,26 @@ function determineTier(score: number): ScoringTier {
   return "COLD";
 }
 
-export function calculateIcpScore(opportunity: OpportunityInput): IcpScoreResult {
+export interface ScoringWeights {
+  budget: number;
+  sector: number;
+  geography: number;
+  timing: number;
+  utahMultiplier: number;
+}
+
+export const DEFAULT_WEIGHTS: ScoringWeights = {
+  budget: 25,
+  sector: 25,
+  geography: 25,
+  timing: 25,
+  utahMultiplier: 1.5,
+};
+
+export function calculateIcpScore(
+  opportunity: OpportunityInput,
+  weights: ScoringWeights = DEFAULT_WEIGHTS
+): IcpScoreResult {
   const budget = scoreBudget(opportunity.estimatedValue);
   const sector = scoreSector(opportunity.title, opportunity.description);
   const { score: geography, isUtah } = scoreGeography(
@@ -148,10 +167,13 @@ export function calculateIcpScore(opportunity: OpportunityInput): IcpScoreResult
   );
   const timing = scoreTiming(opportunity.dueDate);
 
-  const rawScore = (budget + sector + geography + timing) / 4;
+  const totalWeight = weights.budget + weights.sector + weights.geography + weights.timing;
+  const rawScore = totalWeight > 0
+    ? (budget * weights.budget + sector * weights.sector + geography * weights.geography + timing * weights.timing) / totalWeight
+    : (budget + sector + geography + timing) / 4;
 
   const finalScore = isUtah
-    ? Math.min(100, rawScore * 1.5)
+    ? Math.min(100, rawScore * weights.utahMultiplier)
     : rawScore;
 
   const score = Math.round(finalScore * 100) / 100;

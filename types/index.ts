@@ -58,6 +58,7 @@ export interface Opportunity {
   aiBrief: AIBrief | null;
   aiGeneratedAt: string | null;
   keywordsMatched: string[];
+  matchedKeywords?: OpportunityKeyword[];
   status: Status;
   decision: string | null;
   assignedTo: TeamMember | null;
@@ -80,4 +81,70 @@ export interface DashboardStats {
 export interface OpportunitiesResponse {
   data: Opportunity[];
   total: number;
+}
+
+export type KeywordType = "INCLUDE" | "EXCLUDE";
+export type KeywordTier = "HIGH" | "MEDIUM" | "LOW";
+
+export interface Keyword {
+  id: string;
+  term: string;
+  type: KeywordType;
+  tier: KeywordTier;
+  category: string | null;
+  isActive: boolean;
+  matchCount: number;
+  lastMatchAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string | null;
+}
+
+export interface OpportunityKeyword {
+  id: string;
+  opportunityId: string;
+  keywordId: string;
+  matchLocation: string | null;
+  matchedText: string | null;
+  keyword?: Keyword;
+  opportunity?: Opportunity;
+}
+
+export interface KeywordsResponse {
+  data: Keyword[];
+  total: number;
+  includeCounts: { active: number; paused: number };
+  excludeCounts: { active: number; paused: number };
+}
+
+export interface KeywordFormData {
+  term: string;
+  type: KeywordType;
+  tier: KeywordTier;
+  category: string | null;
+}
+
+export interface ScoringConfig {
+  id: string;
+  budgetWeight: number;
+  sectorWeight: number;
+  geographyWeight: number;
+  timingWeight: number;
+  utahMultiplier: number;
+  updatedAt: string;
+}
+
+export interface KeywordStats {
+  totalInclude: number;
+  totalExclude: number;
+  activeInclude: number;
+  activeExclude: number;
+  topMatching: Array<{
+    id: string;
+    term: string;
+    type: KeywordType;
+    matchCount: number;
+  }>;
+  recentlyAdded: Keyword[];
+  neverMatched: Keyword[];
 }

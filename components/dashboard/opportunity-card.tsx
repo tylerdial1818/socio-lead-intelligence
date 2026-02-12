@@ -4,6 +4,7 @@ import { ScoreBadge } from "@/components/opportunities/score-badge";
 import { UtahBadge } from "@/components/opportunities/utah-badge";
 import { ActionButtons } from "@/components/opportunities/action-buttons";
 import { formatCurrency } from "@/lib/utils";
+import { KeywordBadge } from "@/components/keywords/keyword-badge";
 import type { Opportunity, TeamMember } from "@/types";
 
 interface OpportunityCardProps {
@@ -33,7 +34,7 @@ export function OpportunityCard({
           {opportunity.isUtah && <UtahBadge />}
           <span className="font-medium truncate">{opportunity.title}</span>
           {opportunity.issuingOrg && (
-            <span className="text-sm text-zinc-400 truncate hidden lg:inline">
+            <span className="text-sm text-zinc-500 truncate hidden lg:inline">
               {opportunity.issuingOrg}
             </span>
           )}
@@ -66,12 +67,12 @@ export function OpportunityCard({
             {opportunity.isUtah && <UtahBadge />}
             {opportunity.title}
           </h3>
-          <p className="text-zinc-500 mt-1">{opportunity.issuingOrg}</p>
+          <p className="text-zinc-600 mt-1">{opportunity.issuingOrg}</p>
         </div>
         <ScoreBadge score={opportunity.icpScore!} tier={opportunity.tier!} />
       </div>
 
-      <div className="flex items-center gap-6 text-sm text-zinc-600 mb-4">
+      <div className="flex items-center gap-6 text-sm text-zinc-700 mb-4">
         {opportunity.estimatedValue && (
           <span className="font-medium">{formatCurrency(opportunity.estimatedValue)}</span>
         )}
@@ -83,6 +84,27 @@ export function OpportunityCard({
           </>
         )}
       </div>
+
+      {/* Matched Keywords */}
+      {opportunity.matchedKeywords && opportunity.matchedKeywords.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {opportunity.matchedKeywords.slice(0, 5).map((mk) =>
+            mk.keyword ? (
+              <KeywordBadge
+                key={mk.id}
+                term={mk.keyword.term}
+                type={mk.keyword.type}
+                matchLocation={mk.matchLocation}
+              />
+            ) : null
+          )}
+          {opportunity.matchedKeywords.length > 5 && (
+            <span className="text-xs text-zinc-400 self-center">
+              +{opportunity.matchedKeywords.length - 5} more
+            </span>
+          )}
+        </div>
+      )}
 
       <ActionButtons
         onPursue={onPursue}

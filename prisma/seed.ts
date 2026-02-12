@@ -7,10 +7,10 @@ async function main() {
   // Create user
   const hashedPassword = await hash("password123", 12);
   await prisma.user.upsert({
-    where: { email: "tyler@socio.com" },
+    where: { email: "tyler@socio-analytics.com" },
     update: {},
     create: {
-      email: "tyler@socio.com",
+      email: "tyler@socio-analytics.com",
       password: hashedPassword,
       name: "Tyler Martinez",
     },
@@ -18,10 +18,10 @@ async function main() {
 
   // Create team members
   const teamMembers = [
-    { name: "Dr. Sarah Chen", email: "sarah@socio.com" },
-    { name: "Tyler Martinez", email: "tyler@socio.com" },
-    { name: "Dr. Maya Johnson", email: "maya@socio.com" },
-    { name: "Dr. James Wilson", email: "james@socio.com" },
+    { name: "Dr. Sarah Chen", email: "sarah@socio-analytics.com" },
+    { name: "Tyler Martinez", email: "tyler@socio-analytics.com" },
+    { name: "Dr. Maya Johnson", email: "maya@socio-analytics.com" },
+    { name: "Dr. James Wilson", email: "james@socio-analytics.com" },
   ];
 
   for (const member of teamMembers) {
@@ -295,10 +295,146 @@ async function main() {
     });
   }
 
+  // Seed keywords
+  const includeKeywords = [
+    { term: "program evaluation", tier: "HIGH" as const, category: "Services" },
+    { term: "impact evaluation", tier: "HIGH" as const, category: "Services" },
+    { term: "outcome evaluation", tier: "HIGH" as const, category: "Services" },
+    { term: "process evaluation", tier: "HIGH" as const, category: "Services" },
+    { term: "formative evaluation", tier: "HIGH" as const, category: "Services" },
+    { term: "summative evaluation", tier: "HIGH" as const, category: "Services" },
+    { term: "impact assessment", tier: "HIGH" as const, category: "Services" },
+    { term: "needs assessment", tier: "HIGH" as const, category: "Services" },
+    { term: "community needs assessment", tier: "HIGH" as const, category: "Services" },
+    { term: "community health assessment", tier: "HIGH" as const, category: "Services" },
+    { term: "theory of change", tier: "HIGH" as const, category: "Methods" },
+    { term: "logic model", tier: "HIGH" as const, category: "Methods" },
+    { term: "mixed methods", tier: "HIGH" as const, category: "Methods" },
+    { term: "qualitative research", tier: "MEDIUM" as const, category: "Methods" },
+    { term: "quantitative research", tier: "MEDIUM" as const, category: "Methods" },
+    { term: "survey research", tier: "MEDIUM" as const, category: "Methods" },
+    { term: "survey design", tier: "MEDIUM" as const, category: "Methods" },
+    { term: "focus group", tier: "MEDIUM" as const, category: "Methods" },
+    { term: "stakeholder engagement", tier: "MEDIUM" as const, category: "Services" },
+    { term: "monitoring and evaluation", tier: "MEDIUM" as const, category: "Services" },
+    { term: "m&e", tier: "MEDIUM" as const, category: "Services" },
+    { term: "performance measurement", tier: "MEDIUM" as const, category: "Services" },
+    { term: "data analysis", tier: "MEDIUM" as const, category: "Methods" },
+    { term: "research services", tier: "MEDIUM" as const, category: "Services" },
+    { term: "consulting services", tier: "MEDIUM" as const, category: "Services" },
+    { term: "evaluation", tier: "LOW" as const, category: "Services" },
+    { term: "assessment", tier: "LOW" as const, category: "Services" },
+    { term: "research", tier: "LOW" as const, category: "General" },
+    { term: "study", tier: "LOW" as const, category: "General" },
+    { term: "analysis", tier: "LOW" as const, category: "General" },
+    { term: "public health", tier: "MEDIUM" as const, category: "Sectors" },
+    { term: "behavioral health", tier: "MEDIUM" as const, category: "Sectors" },
+    { term: "mental health", tier: "MEDIUM" as const, category: "Sectors" },
+    { term: "child welfare", tier: "MEDIUM" as const, category: "Sectors" },
+    { term: "workforce development", tier: "MEDIUM" as const, category: "Sectors" },
+    { term: "education", tier: "LOW" as const, category: "Sectors" },
+    { term: "housing", tier: "LOW" as const, category: "Sectors" },
+  ];
+
+  const excludeKeywords = [
+    { term: "construction", tier: "HIGH" as const, category: "Construction" },
+    { term: "renovation", tier: "HIGH" as const, category: "Construction" },
+    { term: "hvac", tier: "HIGH" as const, category: "Construction" },
+    { term: "plumbing", tier: "HIGH" as const, category: "Construction" },
+    { term: "roofing", tier: "HIGH" as const, category: "Construction" },
+    { term: "paving", tier: "HIGH" as const, category: "Construction" },
+    { term: "landscaping", tier: "HIGH" as const, category: "Construction" },
+    { term: "architecture", tier: "HIGH" as const, category: "Construction" },
+    { term: "engineering services", tier: "MEDIUM" as const, category: "Construction" },
+    { term: "software license", tier: "HIGH" as const, category: "IT" },
+    { term: "hardware", tier: "HIGH" as const, category: "IT" },
+    { term: "network equipment", tier: "HIGH" as const, category: "IT" },
+    { term: "it infrastructure", tier: "HIGH" as const, category: "IT" },
+    { term: "cybersecurity", tier: "HIGH" as const, category: "IT" },
+    { term: "cloud migration", tier: "HIGH" as const, category: "IT" },
+    { term: "web development", tier: "MEDIUM" as const, category: "IT" },
+    { term: "database administrator", tier: "HIGH" as const, category: "IT" },
+    { term: "vehicle", tier: "HIGH" as const, category: "Goods" },
+    { term: "fleet", tier: "HIGH" as const, category: "Goods" },
+    { term: "equipment purchase", tier: "HIGH" as const, category: "Goods" },
+    { term: "medical equipment", tier: "HIGH" as const, category: "Goods" },
+    { term: "medical supplies", tier: "HIGH" as const, category: "Goods" },
+    { term: "furniture", tier: "HIGH" as const, category: "Goods" },
+    { term: "office supplies", tier: "HIGH" as const, category: "Goods" },
+    { term: "janitorial", tier: "HIGH" as const, category: "Operations" },
+    { term: "custodial", tier: "HIGH" as const, category: "Operations" },
+    { term: "cleaning services", tier: "HIGH" as const, category: "Operations" },
+    { term: "security guard", tier: "HIGH" as const, category: "Operations" },
+    { term: "food service", tier: "HIGH" as const, category: "Operations" },
+    { term: "catering", tier: "HIGH" as const, category: "Operations" },
+    { term: "waste management", tier: "HIGH" as const, category: "Operations" },
+    { term: "freight", tier: "HIGH" as const, category: "Transportation" },
+    { term: "shipping", tier: "HIGH" as const, category: "Transportation" },
+    { term: "delivery services", tier: "HIGH" as const, category: "Transportation" },
+    { term: "courier", tier: "HIGH" as const, category: "Transportation" },
+    { term: "staffing agency", tier: "HIGH" as const, category: "Staffing" },
+    { term: "temp services", tier: "HIGH" as const, category: "Staffing" },
+    { term: "temporary staffing", tier: "HIGH" as const, category: "Staffing" },
+    { term: "audit services", tier: "HIGH" as const, category: "Financial" },
+    { term: "financial audit", tier: "HIGH" as const, category: "Financial" },
+    { term: "accounting services", tier: "HIGH" as const, category: "Financial" },
+    { term: "legal services", tier: "HIGH" as const, category: "Legal" },
+    { term: "actuarial", tier: "HIGH" as const, category: "Financial" },
+    { term: "advertising", tier: "HIGH" as const, category: "Marketing" },
+    { term: "graphic design", tier: "HIGH" as const, category: "Marketing" },
+    { term: "video production", tier: "HIGH" as const, category: "Marketing" },
+    { term: "photography", tier: "HIGH" as const, category: "Marketing" },
+  ];
+
+  for (const kw of includeKeywords) {
+    await prisma.keyword.upsert({
+      where: { term: kw.term },
+      update: {},
+      create: {
+        term: kw.term,
+        type: "INCLUDE",
+        tier: kw.tier,
+        category: kw.category,
+        isActive: true,
+      },
+    });
+  }
+
+  for (const kw of excludeKeywords) {
+    await prisma.keyword.upsert({
+      where: { term: kw.term },
+      update: {},
+      create: {
+        term: kw.term,
+        type: "EXCLUDE",
+        tier: kw.tier,
+        category: kw.category,
+        isActive: true,
+      },
+    });
+  }
+
+  // Seed default scoring config
+  await prisma.scoringConfig.upsert({
+    where: { id: "default" },
+    update: {},
+    create: {
+      id: "default",
+      budgetWeight: 25,
+      sectorWeight: 25,
+      geographyWeight: 25,
+      timingWeight: 25,
+      utahMultiplier: 1.5,
+    },
+  });
+
   console.log("Seed data created successfully!");
-  console.log(`  - 1 user (tyler@socio.com / password123)`);
+  console.log(`  - 1 user (tyler@socio-analytics.com / password123)`);
   console.log(`  - ${teamMembers.length} team members`);
   console.log(`  - ${opportunities.length} opportunities`);
+  console.log(`  - ${includeKeywords.length} include keywords`);
+  console.log(`  - ${excludeKeywords.length} exclude keywords`);
+  console.log(`  - 1 default scoring config`);
 }
 
 main()

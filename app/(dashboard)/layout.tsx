@@ -37,8 +37,11 @@ export default function DashboardLayout({
         lastSyncAt={stats?.lastSyncAt}
         onLogout={() => logout()}
       />
-      <main className="ml-64 p-8">
+      <main className="ml-64 p-8 pb-16">
         {children}
+        <footer className="mt-12 text-center">
+          <p className="text-xs text-zinc-400">Built and Powered by Dialed Intelligence LLC</p>
+        </footer>
       </main>
     </div>
   );
