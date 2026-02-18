@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/scraper/sam-gov",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/scraper/world-bank",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}
