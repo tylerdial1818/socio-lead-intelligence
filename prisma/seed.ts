@@ -5,23 +5,23 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Create user
-  const hashedPassword = await hash("password123", 12);
+  const hashedPassword = await hash("Socio!Lead2026$", 12);
   await prisma.user.upsert({
-    where: { email: "tyler@socio-analytics.com" },
+    where: { email: "tyler@dialedintelligence.com" },
     update: {},
     create: {
-      email: "tyler@socio-analytics.com",
+      email: "tyler@dialedintelligence.com",
       password: hashedPassword,
-      name: "Tyler Martinez",
+      name: "Tyler Dial",
     },
   });
 
   // Create team members
   const teamMembers = [
-    { name: "Dr. Sarah Chen", email: "sarah@socio-analytics.com" },
-    { name: "Tyler Martinez", email: "tyler@socio-analytics.com" },
-    { name: "Dr. Maya Johnson", email: "maya@socio-analytics.com" },
-    { name: "Dr. James Wilson", email: "james@socio-analytics.com" },
+    { name: "Tyler Dial", email: "tyler@dialedintelligence.com" },
+    { name: "Ruth Hardy", email: "ruth@dialedintelligence.com" },
+    { name: "Ben Gibbs", email: "ben@dialedintelligence.com" },
+    { name: "Lance Erikson", email: "lance@dialedintelligence.com" },
   ];
 
   for (const member of teamMembers) {
@@ -429,7 +429,7 @@ async function main() {
   });
 
   console.log("Seed data created successfully!");
-  console.log(`  - 1 user (tyler@socio-analytics.com / password123)`);
+  console.log(`  - 1 user (tyler@dialedintelligence.com)`);
   console.log(`  - ${teamMembers.length} team members`);
   console.log(`  - ${opportunities.length} opportunities`);
   console.log(`  - ${includeKeywords.length} include keywords`);

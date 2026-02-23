@@ -1,7 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-export async function GET() {
+function verifyCronAuth(request: NextRequest): boolean {
+  const authHeader = request.headers.get("authorization");
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) return false;
+  return authHeader === `Bearer ${cronSecret}`;
+}
+
+export async function GET(request: NextRequest) {
+  if (!verifyCronAuth(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const checks: Record<string, string> = {};
 
   // Check env vars exist (don't reveal values)

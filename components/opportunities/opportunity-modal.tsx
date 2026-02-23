@@ -1,5 +1,5 @@
 "use client";
-import { ExternalLink, Mail, Phone } from "lucide-react";
+import { ExternalLink, Mail, Phone, Sparkles, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { ScoreBreakdown } from "./score-breakdown";
 import { ActionButtons } from "./action-buttons";
 import { KeywordBadge } from "@/components/keywords/keyword-badge";
 import { formatCurrency, formatSource } from "@/lib/utils";
+import { useGenerateBrief } from "@/hooks/use-ai-brief";
 import type { Opportunity, TeamMember } from "@/types";
 import { useState } from "react";
 
@@ -31,6 +32,7 @@ export function OpportunityModal({
 }: OpportunityModalProps) {
   const [notes, setNotes] = useState(opportunity?.notes || "");
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const generateBrief = useGenerateBrief();
 
   if (!opportunity) return null;
 
@@ -80,6 +82,28 @@ export function OpportunityModal({
           </div>
 
           {/* AI Brief */}
+          {!opportunity.aiBrief && (
+            <div className="mb-6 flex justify-center">
+              <Button
+                variant="outline"
+                onClick={() => generateBrief.mutate(opportunity.id)}
+                disabled={generateBrief.isPending}
+                className="gap-2"
+              >
+                {generateBrief.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                )}
+                {generateBrief.isPending ? "Generating Brief..." : "Generate AI Brief"}
+              </Button>
+              {generateBrief.isError && (
+                <p className="text-sm text-red-500 ml-3 self-center">
+                  {generateBrief.error.message}
+                </p>
+              )}
+            </div>
+          )}
           {opportunity.aiBrief && (
             <AIBrief
               brief={opportunity.aiBrief}

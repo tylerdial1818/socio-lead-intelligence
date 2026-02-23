@@ -22,6 +22,8 @@ export async function GET(
   }
 }
 
+const VALID_STATUSES = ["NEW", "REVIEWING", "PURSUING", "PASSED", "WON", "LOST"];
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -29,6 +31,13 @@ export async function PATCH(
   try {
     const body = await request.json();
     const { status, assignedToId, notes, decision } = body;
+
+    if (status !== undefined && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json(
+        { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` },
+        { status: 400 }
+      );
+    }
 
     const data: Record<string, unknown> = {};
     if (status !== undefined) data.status = status;

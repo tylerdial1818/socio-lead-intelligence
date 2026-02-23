@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@/lib/generated/prisma/client";
 
 export async function PATCH(
   request: NextRequest,
@@ -17,7 +18,10 @@ export async function PATCH(
       data,
     });
     return NextResponse.json(member);
-  } catch {
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json({ error: "Team member not found" }, { status: 404 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -29,7 +33,10 @@ export async function DELETE(
   try {
     await prisma.teamMember.delete({ where: { id: params.id } });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json({ error: "Team member not found" }, { status: 404 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

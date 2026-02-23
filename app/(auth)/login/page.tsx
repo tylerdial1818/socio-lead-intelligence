@@ -37,7 +37,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="tyler@socio-analytics.com"
+              placeholder="you@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -63,7 +63,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-xs text-zinc-500 text-center mt-6">
-          Demo: tyler@socio-analytics.com / password123
+          Socio Lead Intelligence
         </p>
       </div>
     </div>
