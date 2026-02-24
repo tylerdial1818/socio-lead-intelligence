@@ -152,7 +152,7 @@ npm run lint             # ESLint check
 - `postinstall` hook runs `prisma generate` for Vercel builds
 - `prisma.config.ts` uses `process.env` (not Prisma's `env()`) to avoid crashes when env vars are missing during install
 
-## Demo Credentials
+## Credentials
 
-- **Email:** tyler@socio-analytics.com
-- **Password:** password123
+- **Login Email:** tyler@socio-analytics.com
+- **Password:** Set via `SEED_PASSWORD` env var (never hardcoded in source)

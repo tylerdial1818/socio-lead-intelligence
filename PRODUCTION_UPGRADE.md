@@ -4,23 +4,23 @@
 
 ## Overview
 
-The app is deployed on Vercel with real Bonfire data (249+ Utah opportunities) flowing in daily via cron. Currently in demo mode: single hardcoded user with `password123`, stub pages (Analytics, Calendar), no AI brief generation endpoint, fictional team names, and debug logging exposed. This spec upgrades it for the production team: Tyler Dial, Ruth Hardy, Ben Gibbs, and Lance Erikson.
+The app is deployed on Vercel with real Bonfire data (249+ Utah opportunities) flowing in daily via cron. This spec upgrades it from demo mode to production quality for the team: Tyler Dial, Ruth Hardy, Ben Gibbs, and Lance Erikson.
 
 ---
 
 ## Workstream 1: Seed Data & Auth Cleanup
 
 ### 1a. Update `prisma/seed.ts`
-- Change user from `Tyler Martinez / tyler@socio-analytics.com / password123` to `Tyler Dial / tyler@dialedintelligence.com` with a strong password (e.g. `Socio!Lead2026$`)
+- Change user to `Tyler Dial / tyler@socio-analytics.com` with password read from `SEED_PASSWORD` env var (never hardcoded)
 - Replace fictional TeamMembers with:
-  - Tyler Dial — tyler@dialedintelligence.com
-  - Ruth Hardy — ruth@dialedintelligence.com
-  - Ben Gibbs — ben@dialedintelligence.com
-  - Lance Erikson — lance@dialedintelligence.com
+  - Tyler Dial — tyler@socio-analytics.com
+  - Ruth Hardy — ruth@socio-analytics.com
+  - Ben Gibbs — ben@socio-analytics.com
+  - Lance Erikson — lance@socio-analytics.com
 
 ### 1b. Update `app/(auth)/login/page.tsx`
-- Remove the demo credentials paragraph: `<p className="text-xs ...">Demo: tyler@socio-analytics.com / password123</p>`
-- Update placeholder in email input from `tyler@socio-analytics.com` to generic `you@company.com`
+- Remove any demo credentials text from login page
+- Update placeholder in email input to generic `you@company.com`
 
 ### 1c. Update `app/api/auth/login/route.ts`
 - In the catch block, replace `return NextResponse.json({ error: message }, ...)` with `return NextResponse.json({ error: "Internal server error" }, { status: 500 })` — do not expose internal error messages
@@ -298,7 +298,7 @@ Add CRON_SECRET bearer token check (same pattern as scraper routes).
 
 ### Create `scripts/update-production-user.ts`
 Script to run once against production DB to:
-1. Update the existing User record: name → "Tyler Dial", email → "tyler@dialedintelligence.com", password → hashed strong password
+1. Update the existing User record: name → "Tyler Dial", email → "tyler@socio-analytics.com", password → hashed from SEED_PASSWORD env var
 2. Delete all existing TeamMembers
 3. Create 4 TeamMembers: Tyler Dial, Ruth Hardy, Ben Gibbs, Lance Erikson
 4. Run via: `npx tsx scripts/update-production-user.ts`
