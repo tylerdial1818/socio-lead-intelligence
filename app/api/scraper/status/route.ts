@@ -11,7 +11,7 @@ export async function GET() {
     });
 
     // Latest run per source
-    const sources = ["UTAH_BONFIRE", "SAM_GOV", "WORLD_BANK"] as const;
+    const sources = ["UTAH_BONFIRE", "STATE_BONFIRE", "SAM_GOV", "WORLD_BANK"] as const;
     const latest = await Promise.all(
       sources.map((s) =>
         prisma.scraperRun.findFirst({
