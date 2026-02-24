@@ -6,7 +6,10 @@ import { loadActiveKeywords, matchKeywords } from "@/lib/scraper/keyword-matcher
 export const maxDuration = 60;
 
 /** Max opportunities to enrich per invocation (keeps within 60s timeout). */
-const BATCH_SIZE = 30;
+const BATCH_SIZE = 10;
+
+/** Number of AI calls to run in parallel. */
+const PARALLEL = 5;
 
 function verifyCronAuth(request: NextRequest): boolean {
   const authHeader = request.headers.get("authorization");
@@ -73,69 +76,87 @@ export async function GET(request: NextRequest) {
     let enrichedCount = 0;
     const errors: string[] = [];
 
-    for (const opp of unenriched) {
-      try {
-        // Extract department from the synthetic description if available
-        const deptMatch = opp.description?.match(/Issued by (.+?)\. Reference:/);
-        const department = deptMatch?.[1] || opp.issuingOrg;
+    // Process in parallel batches to stay within 60s timeout
+    for (let i = 0; i < unenriched.length; i += PARALLEL) {
+      const batch = unenriched.slice(i, i + PARALLEL);
 
-        const result = await enrichOpportunity({
-          title: opp.title,
-          issuingOrg: opp.issuingOrg,
-          state: opp.locationState,
-          department,
-        });
-
-        // Re-run keyword matching against the enriched description
-        const keywordResult = matchKeywords(
-          opp.title,
-          result.enrichedDescription,
-          keywords
-        );
-
-        // Update the opportunity
-        await prisma.opportunity.update({
-          where: { id: opp.id },
-          data: {
-            description: result.enrichedDescription,
-            category: result.suggestedCategory,
-            keywordsMatched: keywordResult.includeTerms,
-          },
-        });
-
-        // Recreate keyword junction records with new matches
-        await prisma.opportunityKeyword.deleteMany({
-          where: { opportunityId: opp.id },
-        });
-
-        if (keywordResult.matched.length > 0) {
-          await prisma.opportunityKeyword.createMany({
-            data: keywordResult.matched.map((m) => ({
-              opportunityId: opp.id,
-              keywordId: m.keywordId,
-              matchLocation: m.matchLocation,
-              matchedText: m.term,
-            })),
+      // 1. Fire all AI calls in parallel
+      const aiResults = await Promise.allSettled(
+        batch.map((opp) => {
+          const deptMatch = opp.description?.match(/Issued by (.+?)\. Reference:/);
+          const department = deptMatch?.[1] || opp.issuingOrg;
+          return enrichOpportunity({
+            title: opp.title,
+            issuingOrg: opp.issuingOrg,
+            state: opp.locationState,
+            department,
           });
+        })
+      );
 
-          await Promise.all(
-            keywordResult.matched.map((m) =>
-              prisma.keyword.update({
-                where: { id: m.keywordId },
-                data: {
-                  matchCount: { increment: 1 },
-                  lastMatchAt: new Date(),
-                },
-              })
-            )
-          );
+      // 2. Save results to DB sequentially (avoids connection pool exhaustion)
+      for (let j = 0; j < batch.length; j++) {
+        const opp = batch[j];
+        const aiResult = aiResults[j];
+
+        if (aiResult.status === "rejected") {
+          const msg = `Failed to enrich ${opp.id}: ${aiResult.reason instanceof Error ? aiResult.reason.message : String(aiResult.reason)}`;
+          errors.push(msg);
+          console.error(msg);
+          continue;
         }
 
-        enrichedCount++;
-      } catch (err) {
-        const msg = `Failed to enrich ${opp.id}: ${err instanceof Error ? err.message : String(err)}`;
-        errors.push(msg);
-        console.error(msg);
+        try {
+          const result = aiResult.value;
+
+          const keywordResult = matchKeywords(
+            opp.title,
+            result.enrichedDescription,
+            keywords
+          );
+
+          await prisma.opportunity.update({
+            where: { id: opp.id },
+            data: {
+              description: result.enrichedDescription,
+              category: result.suggestedCategory,
+              keywordsMatched: keywordResult.includeTerms,
+            },
+          });
+
+          await prisma.opportunityKeyword.deleteMany({
+            where: { opportunityId: opp.id },
+          });
+
+          if (keywordResult.matched.length > 0) {
+            await prisma.opportunityKeyword.createMany({
+              data: keywordResult.matched.map((m) => ({
+                opportunityId: opp.id,
+                keywordId: m.keywordId,
+                matchLocation: m.matchLocation,
+                matchedText: m.term,
+              })),
+            });
+
+            await Promise.all(
+              keywordResult.matched.map((m) =>
+                prisma.keyword.update({
+                  where: { id: m.keywordId },
+                  data: {
+                    matchCount: { increment: 1 },
+                    lastMatchAt: new Date(),
+                  },
+                })
+              )
+            );
+          }
+
+          enrichedCount++;
+        } catch (err) {
+          const msg = `Failed to save enrichment for ${opp.id}: ${err instanceof Error ? err.message : String(err)}`;
+          errors.push(msg);
+          console.error(msg);
+        }
       }
     }
 
