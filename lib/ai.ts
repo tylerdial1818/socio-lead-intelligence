@@ -27,7 +27,7 @@ export async function generateBrief(input: BriefInput): Promise<GeneratedBrief> 
     throw new Error("OPENAI_API_KEY environment variable is not set");
   }
   const openai = new OpenAI({ apiKey });
-  const prompt = `You are an analyst for a social-impact consulting firm (Socio Analytics) based in Utah. Analyze this government contracting opportunity and provide a structured intelligence brief.
+  const prompt = `You are an analyst for a social-impact consulting firm (Socio) based in Utah. Analyze this government contracting opportunity and provide a structured intelligence brief.
 
 OPPORTUNITY:
 Title: ${input.title}
@@ -53,7 +53,8 @@ Guidelines:
 - CONSIDER: Moderate fit (score 50-74, adjacent sector or distant geography)
 - PASS: Poor fit (score <50, unrelated sector, or significant barriers)
 - Be specific and actionable, not generic
-- Reference the firm's Utah base and social-impact focus`;
+- Reference the firm's Utah base and social-impact focus
+- Refer to the firm as "Socio" (not "Socio Analytics")`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
