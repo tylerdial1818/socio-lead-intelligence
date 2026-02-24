@@ -3,6 +3,10 @@
     {
       "path": "/api/scraper/bonfire",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/scraper/enrich",
+      "schedule": "15 8 * * *"
     }
   ]
 }
