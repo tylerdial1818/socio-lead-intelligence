@@ -1,7 +1,5 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 interface BriefInput {
   title: string;
   description: string | null;
@@ -24,6 +22,11 @@ interface GeneratedBrief {
 }
 
 export async function generateBrief(input: BriefInput): Promise<GeneratedBrief> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY environment variable is not set");
+  }
+  const openai = new OpenAI({ apiKey });
   const prompt = `You are an analyst for a social-impact consulting firm (Socio Analytics) based in Utah. Analyze this government contracting opportunity and provide a structured intelligence brief.
 
 OPPORTUNITY:

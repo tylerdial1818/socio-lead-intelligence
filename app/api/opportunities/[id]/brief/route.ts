@@ -42,10 +42,8 @@ export async function POST(
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Brief generation error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate brief" },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : "Failed to generate brief";
+    console.error("Brief generation error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
